@@ -10,6 +10,7 @@ import { FaCalendarAlt } from "react-icons/fa";
 import styles from "./TicketBooking.module.css";
 import { Button } from "react-bootstrap";
 import SeatSelectionModal from "@/components/SeatSelectionModal";
+import Link from "next/link";
 
 interface TheaterMovie {
   movie: {
@@ -89,7 +90,9 @@ const TicketBooking: React.FC = () => {
           title: response.data.title,
           releaseDate: response.data.release_date,
           genre: response.data.genres.map((g: any) => g.name).join(", "),
-          duration: response.data.runtime ? `${response.data.runtime} minutes` : 'Unknown',
+          duration: response.data.runtime
+            ? `${response.data.runtime} minutes`
+            : "Unknown",
         });
       } catch (error) {
         console.error("Error fetching movie details from TMDB:", error);
@@ -121,25 +124,28 @@ const TicketBooking: React.FC = () => {
       alert("Please select a valid movie, theater, date, and time.");
       return;
     }
-  
+
     try {
       const totalAmount = totalPrice;
-  
-      const response = await axios.post("http://localhost:8000/api/ticket/createticket", {
-        theatername: selectedTheaterData.name,
-        price: totalAmount,
-        date: selectedDate.toISOString().split("T")[0],
-        time: selectedTime,
-        movie: movieDetails.title,
-        seats: selectedSeats.length,
-        movieId: tmdbId,
-        theaterId: selectedTheaterData.id,
-        seatnames: selectedSeats.map(seat => seat.name), 
-      });
-  
+
+      const response = await axios.post(
+        "http://localhost:8000/api/ticket/createticket",
+        {
+          theatername: selectedTheaterData.name,
+          price: totalAmount,
+          date: selectedDate.toISOString().split("T")[0],
+          time: selectedTime,
+          movie: movieDetails.title,
+          seats: selectedSeats.length,
+          movieId: tmdbId,
+          theaterId: selectedTheaterData.id,
+          seatnames: selectedSeats.map((seat) => seat.name),
+        }
+      );
+
       const createdTicket = response.data;
       alert("Booking successful!");
-      window.location.href = `/confirmation?ticketId=${createdTicket._id}`; 
+      window.location.href = `/confirmation?ticketId=${createdTicket._id}`;
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error(
@@ -147,15 +153,16 @@ const TicketBooking: React.FC = () => {
           error.response?.data || error.message
         );
       } else {
-          console.error("Unexpected error booking ticket:", error);
+        console.error("Unexpected error booking ticket:", error);
       }
       alert("Error booking ticket. Please try again.");
     }
   };
-  
-  
 
-  const handleSeatSelectionConfirm = (selectedSeats: Seat[], totalPrice: number) => {
+  const handleSeatSelectionConfirm = (
+    selectedSeats: Seat[],
+    totalPrice: number
+  ) => {
     setSelectedSeats(selectedSeats);
     setTotalPrice(totalPrice);
   };
@@ -168,7 +175,9 @@ const TicketBooking: React.FC = () => {
           {movieDetails && (
             <>
               <h2 className={styles.h2}>{movieDetails.title}</h2>
-              <p className={styles.p}>Release Date: {movieDetails.releaseDate}</p>
+              <p className={styles.p}>
+                Release Date: {movieDetails.releaseDate}
+              </p>
               <p className={styles.p}>Genre: {movieDetails.genre}</p>
               <p className={styles.p}>Duration: {movieDetails.duration}</p>
             </>
@@ -226,7 +235,8 @@ const TicketBooking: React.FC = () => {
           <strong>Selected Seats:</strong> {selectedSeats.length}
         </div>
         <div className={styles.selected_seats}>
-          <strong>Selected Seats Names:</strong> {selectedSeats.map(seat => seat.name).join(', ')}
+          <strong>Selected Seats Names:</strong>{" "}
+          {selectedSeats.map((seat) => seat.name).join(", ")}
         </div>
         <div className={styles.form_group}>
           <strong>Total Price: </strong>₹{totalPrice}
@@ -234,16 +244,27 @@ const TicketBooking: React.FC = () => {
         <Button
           variant="dark"
           disabled={
-            !selectedTheater || !selectedDate || !selectedTime || selectedSeats.length === 0
+            !selectedTheater ||
+            !selectedDate ||
+            !selectedTime ||
+            selectedSeats.length === 0
           }
         >
-          Proceed to Payment
+          <Link
+            href="https://buy.stripe.com/test_bIYdUoaAU1vdb4IeUX"
+            className="text-decoration-none text-white"
+          >
+            Proceed to Payment
+          </Link>
         </Button>
         <Button
           variant="success"
           onClick={handleBooking}
           disabled={
-            !selectedTheater || !selectedDate || !selectedTime || selectedSeats.length === 0
+            !selectedTheater ||
+            !selectedDate ||
+            !selectedTime ||
+            selectedSeats.length === 0
           }
         >
           Book Ticket
