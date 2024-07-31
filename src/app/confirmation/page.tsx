@@ -72,7 +72,7 @@ const Confirmation: React.FC = () => {
               <QRCode value={JSON.stringify(ticket)} />
             </div>
             <button className={styles.paymentButton}>
-            <Link href="https://buy.stripe.com/test_fZe5nS8sM5Lt5Ko7su" className="text-decoration-none text-white">
+            <Link href="" className="text-decoration-none text-white">
                 Proceed to Payment
               </Link>
             </button>

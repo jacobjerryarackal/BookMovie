@@ -232,6 +232,14 @@ const TicketBooking: React.FC = () => {
           <strong>Total Price: </strong>₹{totalPrice}
         </div>
         <Button
+          variant="dark"
+          disabled={
+            !selectedTheater || !selectedDate || !selectedTime || selectedSeats.length === 0
+          }
+        >
+          Proceed to Payment
+        </Button>
+        <Button
           variant="success"
           onClick={handleBooking}
           disabled={
