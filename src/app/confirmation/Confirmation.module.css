@@ -1,0 +1,85 @@
+.confirmationContainer {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.h1 {
+  margin-bottom: 20px;
+  font-size: 30px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.alert {
+  margin: 20px auto;
+  padding: 20px;
+  width: 80%;
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  border-radius: 5px;
+}
+
+.ticketCard {
+  margin: 20px auto;
+  padding: 20px;
+  width: 80%;
+  max-width: 600px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.cardBody {
+  text-align: left;
+}
+
+.successIcon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50px;
+  height: 50px;
+  margin: 0 auto 20px;
+  background-color: #28a745;
+  color: white;
+  border-radius: 50%;
+  font-size: 24px;
+  line-height: 50px;
+}
+
+.cardTitle {
+  font-size: 1.5rem;
+  color: #333;
+  text-align: center;
+}
+
+.cardText {
+  font-size: 1rem;
+  color: #555;
+  margin: 5px 0;
+}
+
+.qrCodeContainer {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.paymentButton {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.paymentButton:hover {
+  background-color: #0056b3;
+}

@@ -1,0 +1,14 @@
+.seat_grid {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 10px;
+}
+
+.gap {
+  grid-column: span 10;
+  height: 20px; 
+}
+
+.seat_button {
+  width: 100%;
+}

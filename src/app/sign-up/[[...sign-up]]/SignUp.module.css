@@ -1,0 +1,19 @@
+.signup{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.h1{
+    display: flex;
+    font-size: 25px;
+    font-weight: bold;
+    margin-top: 20px;
+    color: white;
+}
+
+.sp{
+    margin-top: 10px;
+}
