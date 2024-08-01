@@ -72,8 +72,8 @@ const Confirmation: React.FC = () => {
               <QRCode value={JSON.stringify(ticket)} />
             </div>
             <button className={styles.paymentButton}>
-            <Link href="" className="text-decoration-none text-white">
-                Proceed to Payment
+            <Link href="/" className="text-decoration-none text-white">
+                Explore More Movies
               </Link>
             </button>
           </div>
