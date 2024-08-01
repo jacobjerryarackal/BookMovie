@@ -24,6 +24,7 @@ const Confirmation: React.FC = () => {
   const [ticket, setTicket] = useState<Ticket | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [phoneNumber, setPhoneNumber] = useState<string>(''); 
 
   useEffect(() => {
     const fetchTicket = async () => {
@@ -45,6 +46,29 @@ const Confirmation: React.FC = () => {
 
     fetchTicket();
   }, [ticketId]);
+
+  const sendWhatsAppMessage = async () => {
+    if (!phoneNumber) {
+      alert('Please enter a phone number.');
+      return;
+    }
+
+    try {
+      const response = await axios.post('http://localhost:8000/api/send-whatsapp', {
+        phoneNumber,
+        ticket,
+      });
+
+      if (response.status === 200) {
+        alert('WhatsApp message sent successfully.');
+      } else {
+        alert('Error sending WhatsApp message.');
+      }
+    } catch (error) {
+      console.error('Error sending WhatsApp message:', error);
+      alert('Error sending WhatsApp message.');
+    }
+  };
 
   return (
     <div className={styles.confirmationContainer}>
@@ -70,6 +94,19 @@ const Confirmation: React.FC = () => {
             <p className={styles.cardText}><strong>Price:</strong> ₹{ticket.price}</p>
             <div className={styles.qrCodeContainer}>
               <QRCode value={JSON.stringify(ticket)} />
+            </div>
+            <p className={styles.cardText}><strong>WhatsApp Number:</strong></p>
+            <input
+              type="text"
+              placeholder="Enter phone number"
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
+              className={styles.phoneNumberInput}
+            />
+            <div className={styles.space}>
+            <button className={styles.paymentButton} onClick={sendWhatsAppMessage}>
+              Send to WhatsApp
+            </button>
             </div>
             <button className={styles.paymentButton}>
             <Link href="/" className="text-decoration-none text-white">

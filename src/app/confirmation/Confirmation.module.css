@@ -67,6 +67,14 @@
   margin: 20px 0;
 }
 
+.phoneNumberInput {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
 .paymentButton {
   display: block;
   width: 100%;
@@ -82,4 +90,8 @@
 
 .paymentButton:hover {
   background-color: #0056b3;
+}
+
+.space{
+  margin-bottom: 5px;
 }
