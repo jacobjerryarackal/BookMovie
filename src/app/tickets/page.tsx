@@ -10,7 +10,8 @@ import { FaCalendarAlt } from "react-icons/fa";
 import styles from "./TicketBooking.module.css";
 import { Button } from "react-bootstrap";
 import SeatSelectionModal from "@/components/SeatSelectionModal";
-import Link from "next/link";
+import toast, { Toaster } from "react-hot-toast";
+import useRazorpay from "../hooks/useRazorpay";
 
 interface TheaterMovie {
   movie: {
@@ -34,6 +35,13 @@ interface Seat {
   selected: boolean;
 }
 
+
+declare global {
+  interface Window {
+    Razorpay: any;
+  }
+}
+
 const TMDB_API_KEY = "fc575ea163f0128176ca77150fd7c76b";
 
 const TicketBooking: React.FC = () => {
@@ -44,18 +52,81 @@ const TicketBooking: React.FC = () => {
   const [selectedTime, setSelectedTime] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [seats, setSeats] = useState<number>(1);
-  const [movieDetails, setMovieDetails] = useState<
-    TheaterMovie["movie"] | null
-  >(null);
+  const [movieDetails, setMovieDetails] = useState<TheaterMovie["movie"] | null>(null);
   const [availableTimes, setAvailableTimes] = useState<string[]>([]);
   const [showModal, setShowModal] = useState(false);
-
-  // New state variables for selected seats and total price
   const [selectedSeats, setSelectedSeats] = useState<Seat[]>([]);
   const [totalPrice, setTotalPrice] = useState<number>(0);
+  const [amount, setAmount] = useState(350);
+  const isRazorpayLoaded = useRazorpay();
 
   const handleShow = () => setShowModal(true);
   const handleHide = () => setShowModal(false);
+
+    const handlePayment = async () => {
+        try {
+            const res = await fetch("http://localhost:8000/api/payment/order", {
+                method: "POST",
+                headers: {
+                    "content-type": "application/json"
+                },
+                body: JSON.stringify({
+                    amount
+                })
+            });
+
+            const data = await res.json();
+            console.log(data);
+            handlePaymentVerify(data.data)
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    
+    const handlePaymentVerify = async (data:any) => {
+      if (!isRazorpayLoaded) {
+        console.error("Razorpay script not loaded");
+        return;
+      }
+      const options = {
+          key: process.env.RAZORPAY_KEY_ID,
+          amount: data.amount,
+          currency: data.currency,
+          name: "BookMovie",
+          description: "Test Mode",
+          order_id: data.id,
+          handler: async (response:any) => {
+              console.log("response", response)
+              try {
+                  const res = await fetch("http://localhost:8000/api/payment/verify", {
+                      method: 'POST',
+                      headers: {
+                          'content-type': 'application/json'
+                      },
+                      body: JSON.stringify({
+                          razorpay_order_id: response.razorpay_order_id,
+                          razorpay_payment_id: response.razorpay_payment_id,
+                          razorpay_signature: response.razorpay_signature,
+                      })
+                  })
+
+                  const verifyData = await res.json();
+
+                  if (verifyData.message) {
+                      toast.success(verifyData.message)
+                  }
+              } catch (error) {
+                console.error("Payment verification error:", error);
+                toast.error("Error verifying payment");
+              }
+          },
+          theme: {
+              color: "#5f63b8"
+          }
+      };
+      const rzp1 = new window.Razorpay(options);
+      rzp1.open();
+  }
 
   useEffect(() => {
     const fetchTheaterMovies = async () => {
@@ -243,6 +314,7 @@ const TicketBooking: React.FC = () => {
         </div>
         <Button
           variant="dark"
+          onClick={handlePayment}
           disabled={
             !selectedTheater ||
             !selectedDate ||
@@ -250,13 +322,9 @@ const TicketBooking: React.FC = () => {
             selectedSeats.length === 0
           }
         >
-          <Link
-            href="https://buy.stripe.com/test_bIYdUoaAU1vdb4IeUX"
-            className="text-decoration-none text-white"
-          >
-            Proceed to Payment
-          </Link>
+          Proceed to Payment
         </Button>
+        <Toaster/>
         <Button
           variant="success"
           onClick={handleBooking}

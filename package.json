@@ -27,6 +27,7 @@
     "react-bootstrap": "^2.10.4",
     "react-datepicker": "^7.3.0",
     "react-dom": "^18",
+    "react-hot-toast": "^2.4.1",
     "react-loading-skeleton": "^3.4.0",
     "shortid": "^2.2.16",
     "stripe": "^16.5.0",
