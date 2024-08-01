@@ -1,5 +1,4 @@
-"use client";
-
+"use client"
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import axios from "axios";
@@ -35,7 +34,6 @@ interface Seat {
   selected: boolean;
 }
 
-
 declare global {
   interface Window {
     Razorpay: any;
@@ -57,76 +55,75 @@ const TicketBooking: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedSeats, setSelectedSeats] = useState<Seat[]>([]);
   const [totalPrice, setTotalPrice] = useState<number>(0);
-  const [amount, setAmount] = useState(350);
   const isRazorpayLoaded = useRazorpay();
 
   const handleShow = () => setShowModal(true);
   const handleHide = () => setShowModal(false);
 
-    const handlePayment = async () => {
-        try {
-            const res = await fetch("http://localhost:8000/api/payment/order", {
-                method: "POST",
-                headers: {
-                    "content-type": "application/json"
-                },
-                body: JSON.stringify({
-                    amount
-                })
-            });
+  const handlePayment = async () => {
+    try {
+      const res = await fetch("http://localhost:8000/api/payment/order", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json"
+        },
+        body: JSON.stringify({
+          amount: totalPrice * 100 // Razorpay expects amount in paise (1 INR = 100 paise)
+        })
+      });
 
-            const data = await res.json();
-            console.log(data);
-            handlePaymentVerify(data.data)
-        } catch (error) {
-            console.log(error);
-        }
+      const data = await res.json();
+      console.log(data);
+      handlePaymentVerify(data.data);
+    } catch (error) {
+      console.log(error);
     }
-    
-    const handlePaymentVerify = async (data:any) => {
-      if (!isRazorpayLoaded) {
-        console.error("Razorpay script not loaded");
-        return;
-      }
-      const options = {
-          key: process.env.RAZORPAY_KEY_ID,
-          amount: data.amount,
-          currency: data.currency,
-          name: "BookMovie",
-          description: "Test Mode",
-          order_id: data.id,
-          handler: async (response:any) => {
-              console.log("response", response)
-              try {
-                  const res = await fetch("http://localhost:8000/api/payment/verify", {
-                      method: 'POST',
-                      headers: {
-                          'content-type': 'application/json'
-                      },
-                      body: JSON.stringify({
-                          razorpay_order_id: response.razorpay_order_id,
-                          razorpay_payment_id: response.razorpay_payment_id,
-                          razorpay_signature: response.razorpay_signature,
-                      })
-                  })
+  };
 
-                  const verifyData = await res.json();
+  const handlePaymentVerify = async (data: any) => {
+    if (!isRazorpayLoaded) {
+      console.error("Razorpay script not loaded");
+      return;
+    }
+    const options = {
+      key: process.env.RAZORPAY_KEY_ID,
+      amount: data.amount,
+      currency: data.currency,
+      name: "BookMovie",
+      description: "Test Mode",
+      order_id: data.id,
+      handler: async (response: any) => {
+        console.log("response", response);
+        try {
+          const res = await fetch("http://localhost:8000/api/payment/verify", {
+            method: 'POST',
+            headers: {
+              'content-type': 'application/json'
+            },
+            body: JSON.stringify({
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            })
+          });
 
-                  if (verifyData.message) {
-                      toast.success(verifyData.message)
-                  }
-              } catch (error) {
-                console.error("Payment verification error:", error);
-                toast.error("Error verifying payment");
-              }
-          },
-          theme: {
-              color: "#5f63b8"
+          const verifyData = await res.json();
+
+          if (verifyData.message) {
+            toast.success(verifyData.message);
           }
-      };
-      const rzp1 = new window.Razorpay(options);
-      rzp1.open();
-  }
+        } catch (error) {
+          console.error("Payment verification error:", error);
+          toast.error("Error verifying payment");
+        }
+      },
+      theme: {
+        color: "#5f63b8"
+      }
+    };
+    const rzp1 = new window.Razorpay(options);
+    rzp1.open();
+  };
 
   useEffect(() => {
     const fetchTheaterMovies = async () => {
@@ -197,13 +194,11 @@ const TicketBooking: React.FC = () => {
     }
 
     try {
-      const totalAmount = totalPrice;
-
       const response = await axios.post(
         "http://localhost:8000/api/ticket/createticket",
         {
           theatername: selectedTheaterData.name,
-          price: totalAmount,
+          price: totalPrice,
           date: selectedDate.toISOString().split("T")[0],
           time: selectedTime,
           movie: movieDetails.title,
@@ -324,7 +319,7 @@ const TicketBooking: React.FC = () => {
         >
           Proceed to Payment
         </Button>
-        <Toaster/>
+        <Toaster />
         <Button
           variant="success"
           onClick={handleBooking}
