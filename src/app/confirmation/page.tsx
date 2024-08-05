@@ -70,6 +70,15 @@ const Confirmation: React.FC = () => {
     }
   };
 
+  // Create a new object with the necessary details for the QR code
+  const qrCodeData = ticket ? {
+    theatername: ticket.theatername,
+    date: ticket.date,
+    movie: ticket.movie,
+    seats: ticket.seats,
+    seatnames: ticket.seatnames
+  } : null;
+
   return (
     <div className={styles.confirmationContainer}>
       <h1 className={styles.h1}>Ticket Confirmation</h1>
@@ -93,7 +102,7 @@ const Confirmation: React.FC = () => {
             <p className={styles.cardText}><strong>Seat Names:</strong> {ticket.seatnames.join(', ')}</p>
             <p className={styles.cardText}><strong>Price:</strong> ₹{ticket.price}</p>
             <div className={styles.qrCodeContainer}>
-              <QRCode value={JSON.stringify(ticket)} />
+              {qrCodeData && <QRCode value={JSON.stringify(qrCodeData)} />}
             </div>
             <p className={styles.cardText}><strong>WhatsApp Number:</strong></p>
             <input

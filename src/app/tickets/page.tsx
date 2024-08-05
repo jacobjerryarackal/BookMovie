@@ -288,6 +288,7 @@ const TicketBooking: React.FC = () => {
               id="datePicker"
               selected={selectedDate}
               onChange={(date: Date | null) => setSelectedDate(date)}
+              minDate={new Date()}
               dateFormat="yyyy-MM-dd"
               className={styles.date_picker}
             />
