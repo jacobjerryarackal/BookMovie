@@ -70,14 +70,14 @@ const Confirmation: React.FC = () => {
     }
   };
 
-  // Create a new object with the necessary details for the QR code
-  const qrCodeData = ticket ? {
-    theatername: ticket.theatername,
-    date: ticket.date,
-    movie: ticket.movie,
-    seats: ticket.seats,
-    seatnames: ticket.seatnames
-  } : null;
+
+  const qrCodeData = ticket ? 
+    `Theater: ${ticket.theatername}\n` +
+    `Date: ${ticket.date}\n` +
+    `Movie: ${ticket.movie}\n` +
+    `Seats: ${ticket.seats}\n` +
+    `Seat Names: ${ticket.seatnames.join(', ')}`
+    : '';
 
   return (
     <div className={styles.confirmationContainer}>
@@ -102,7 +102,7 @@ const Confirmation: React.FC = () => {
             <p className={styles.cardText}><strong>Seat Names:</strong> {ticket.seatnames.join(', ')}</p>
             <p className={styles.cardText}><strong>Price:</strong> ₹{ticket.price}</p>
             <div className={styles.qrCodeContainer}>
-              {qrCodeData && <QRCode value={JSON.stringify(qrCodeData)} />}
+              {qrCodeData && <QRCode value={qrCodeData} />}
             </div>
             <p className={styles.cardText}><strong>WhatsApp Number:</strong></p>
             <input
@@ -113,18 +113,17 @@ const Confirmation: React.FC = () => {
               className={styles.phoneNumberInput}
             />
             <div className={styles.space}>
-            <button className={styles.paymentButton} onClick={sendWhatsAppMessage}>
-              Send to WhatsApp
-            </button>
+              <button className={styles.paymentButton} onClick={sendWhatsAppMessage}>
+                Send to WhatsApp
+              </button>
             </div>
             <button className={styles.paymentButton}>
-            <Link href="/" className="text-decoration-none text-white">
+              <Link href="/" className="text-decoration-none text-white">
                 Explore More Movies
               </Link>
             </button>
           </div>
         </div>
-
       ) : (
         <div className={styles.alert} role="alert">
           Ticket not found.
