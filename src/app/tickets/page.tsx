@@ -56,6 +56,7 @@ const TicketBooking: React.FC = () => {
   const [selectedSeats, setSelectedSeats] = useState<Seat[]>([]);
   const [totalPrice, setTotalPrice] = useState<number>(0);
   const isRazorpayLoaded = useRazorpay();
+  const [isPaymentDone, setIsPaymentDone] = useState(false);
 
   const handleShow = () => setShowModal(true);
   const handleHide = () => setShowModal(false);
@@ -68,7 +69,7 @@ const TicketBooking: React.FC = () => {
           "content-type": "application/json"
         },
         body: JSON.stringify({
-          amount: totalPrice * 100 // Razorpay expects amount in paise (1 INR = 100 paise)
+          amount: totalPrice * 100 
         })
       });
 
@@ -111,6 +112,7 @@ const TicketBooking: React.FC = () => {
 
           if (verifyData.message) {
             toast.success(verifyData.message);
+            setIsPaymentDone(true);
           }
         } catch (error) {
           console.error("Payment verification error:", error);
@@ -327,7 +329,8 @@ const TicketBooking: React.FC = () => {
             !selectedTheater ||
             !selectedDate ||
             !selectedTime ||
-            selectedSeats.length === 0
+            selectedSeats.length === 0 ||
+            !isPaymentDone
           }
         >
           Book Ticket
