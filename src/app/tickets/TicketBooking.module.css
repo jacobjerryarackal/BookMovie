@@ -1,113 +1,104 @@
-
-
+/* app/tickets/TicketBooking.module.css */
 .container {
-    max-width: 800px;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  .h1 {
-    text-align: center;
-    color: #333;
-  }
-  
-  .booking_form {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-  
-  .movie_info {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .h2 {
-    margin-bottom: 10px;
-    color: #007bff;
-  }
-  
-  .p {
-    margin: 5px 0;
-    color: #555;
-  }
-  
-  .form_group {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .form_group label {
-    font-weight: bold;
-    color: #333;
-  }
-  
-  .form_group select,
-  .form_group .date_picker {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  
-  .date_picker_wrapper {
-    display: flex;
-    align-items: center;
-    position: relative;
-  }
-  
-  .date_picker {
-    flex-grow: 1;
-  }
-  
-  .calendar_icon {
-    position: absolute;
-    right: 10px;
-    pointer-events: none;
-    color: #007bff;
-  }
-  
-  .selected_seats,
-  .total_price {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-weight: bold;
-    color: #333;
-  }
-  
-  .selected_seats {
-    margin-top: 10px;
-  }
-  
-  .total_price {
-    margin-bottom: 20px;
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.h1 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #333;
+}
+
+.booking_form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.show_info {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.h2 {
+  color: #007bff;
+  margin-bottom: 15px;
+}
+
+.p {
+  margin-bottom: 8px;
+  color: #555;
+}
+
+.form_group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form_group label {
+  font-weight: bold;
+  color: #333;
+}
+
+.form_group select,
+.date_picker {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.date_picker_wrapper {
+  position: relative;
+}
+
+.calendar_icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #666;
+}
+
+.selected_seats {
+  background-color: #e9f7ef;
+  padding: 10px;
+  border-radius: 4px;
+  border-left: 4px solid #28a745;
+}
+
+.button_group {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.payment_button,
+.booking_button {
+  padding: 12px 20px;
+  font-weight: bold;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 15px;
+    margin: 10px;
   }
   
   .button_group {
-    display: flex;
-    justify-content: space-between;
+    flex-direction: column;
   }
   
-  .button_group button {
-    width: 48%;
+  .payment_button,
+  .booking_button {
+    width: 100%;
   }
-  
-  @media (max-width: 600px) {
-    .form_group {
-      gap: 5px;
-    }
-  
-    .button_group {
-      flex-direction: column;
-      gap: 10px;
-    }
-  
-    .button_group button {
-      width: 100%;
-    }
-  }
-  
+}

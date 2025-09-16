@@ -1,3 +1,4 @@
+// app/tickets/page.tsx
 "use client"
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
@@ -12,13 +13,18 @@ import SeatSelectionModal from "@/components/SeatSelectionModal";
 import toast, { Toaster } from "react-hot-toast";
 import useRazorpay from "../hooks/useRazorpay";
 
-interface TheaterMovie {
-  movie: {
+interface TheaterShow {
+  show: {
     id: string;
-    title: string;
-    releaseDate: string;
-    genre: string;
-    duration: string;
+    name: string;
+    premiered: string;
+    genres: string[];
+    runtime: number;
+    image: {
+      medium: string;
+      original: string;
+    } | null;
+    summary: string;
   };
   theater: {
     id: string;
@@ -40,17 +46,14 @@ declare global {
   }
 }
 
-const TMDB_API_KEY = "fc575ea163f0128176ca77150fd7c76b";
-
 const TicketBooking: React.FC = () => {
   const searchParams = useSearchParams();
-  const tmdbId = searchParams.get("tmdbId");
-  const [theaterMovies, setTheaterMovies] = useState<TheaterMovie[]>([]);
+  const tvmazeId = searchParams.get("tvmazeId");
+  const [theaterShows, setTheaterShows] = useState<TheaterShow[]>([]);
   const [selectedTheater, setSelectedTheater] = useState<string>("");
   const [selectedTime, setSelectedTime] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [seats, setSeats] = useState<number>(1);
-  const [movieDetails, setMovieDetails] = useState<TheaterMovie["movie"] | null>(null);
+  const [showDetails, setShowDetails] = useState<TheaterShow["show"] | null>(null);
   const [availableTimes, setAvailableTimes] = useState<string[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedSeats, setSelectedSeats] = useState<Seat[]>([]);
@@ -90,8 +93,8 @@ const TicketBooking: React.FC = () => {
       key: process.env.RAZORPAY_KEY_ID,
       amount: data.amount,
       currency: data.currency,
-      name: "BookMovie",
-      description: "Test Mode",
+      name: "BookShow",
+      description: "TV Show Booking",
       order_id: data.id,
       handler: async (response: any) => {
         console.log("response", response);
@@ -128,70 +131,125 @@ const TicketBooking: React.FC = () => {
   };
 
   useEffect(() => {
-    const fetchTheaterMovies = async () => {
-      if (!tmdbId) {
+    const fetchTheaterShows = async () => {
+      if (!tvmazeId) {
         return;
       }
       try {
-        const response = await axios.get(
-          `http://localhost:8000/api/theatermovies/gettheatermovies/${tmdbId}`
-        );
-        setTheaterMovies(response.data);
+        // Mock data since TVmaze doesn't provide theater information
+        // In a real app, you would fetch this from your backend
+        const mockTheaterShows: TheaterShow[] = [
+          {
+            show: {
+              id: tvmazeId,
+              name: "TV Show",
+              premiered: "2023-01-01",
+              genres: ["Drama", "Comedy"],
+              runtime: 60,
+              image: null,
+              summary: "A great TV show"
+            },
+            theater: {
+              id: "1",
+              name: "Cineplex Downtown",
+              location: "123 Main St"
+            },
+            showtime: "18:30"
+          },
+          {
+            show: {
+              id: tvmazeId,
+              name: "TV Show",
+              premiered: "2023-01-01",
+              genres: ["Drama", "Comedy"],
+              runtime: 60,
+              image: null,
+              summary: "A great TV show"
+            },
+            theater: {
+              id: "2",
+              name: "AMC Theater",
+              location: "456 Oak Ave"
+            },
+            showtime: "20:00"
+          },
+          {
+            show: {
+              id: tvmazeId,
+              name: "TV Show",
+              premiered: "2023-01-01",
+              genres: ["Drama", "Comedy"],
+              runtime: 60,
+              image: null,
+              summary: "A great TV show"
+            },
+            theater: {
+              id: "3",
+              name: "Regal Cinemas",
+              location: "789 Pine Blvd"
+            },
+            showtime: "21:30"
+          }
+        ];
+        
+        setTheaterShows(mockTheaterShows);
       } catch (error) {
-        console.error("Error fetching theater movies:", error);
-        setTheaterMovies([]);
+        console.error("Error fetching theater shows:", error);
+        setTheaterShows([]);
       }
     };
 
-    fetchTheaterMovies();
-  }, [tmdbId]);
+    fetchTheaterShows();
+  }, [tvmazeId]);
 
   useEffect(() => {
-    const fetchMovieDetails = async () => {
-      if (!tmdbId) {
+    const fetchShowDetails = async () => {
+      if (!tvmazeId) {
         return;
       }
       try {
         const response = await axios.get(
-          `https://api.themoviedb.org/3/movie/${tmdbId}?api_key=${TMDB_API_KEY}`
+          `https://api.tvmaze.com/shows/${tvmazeId}`
         );
-        setMovieDetails({
-          id: response.data.id,
-          title: response.data.title,
-          releaseDate: response.data.release_date,
-          genre: response.data.genres.map((g: any) => g.name).join(", "),
-          duration: response.data.runtime
-            ? `${response.data.runtime} minutes`
-            : "Unknown",
+        const showData = response.data;
+        setShowDetails({
+          id: showData.id,
+          name: showData.name,
+          premiered: showData.premiered,
+          genres: showData.genres,
+          runtime: showData.runtime || 60,
+          image: showData.image,
+          summary: showData.summary || "No summary available"
         });
       } catch (error) {
-        console.error("Error fetching movie details from TMDB:", error);
-        setMovieDetails(null);
+        console.error("Error fetching show details from TVmaze:", error);
+        setShowDetails(null);
       }
     };
 
-    fetchMovieDetails();
-  }, [tmdbId]);
+    fetchShowDetails();
+  }, [tvmazeId]);
 
   useEffect(() => {
-    const theaterTimes = theaterMovies
-      .filter((tm) => tm.theater.id === selectedTheater)
-      .map((tm) => tm.showtime);
+    const theaterTimes = theaterShows
+      .filter((ts) => ts.theater.id === selectedTheater)
+      .map((ts) => ts.showtime);
     setAvailableTimes(theaterTimes);
-  }, [selectedTheater, theaterMovies]);
+  }, [selectedTheater, theaterShows]);
 
   const handleBooking = async () => {
-    const selectedTheaterData = theaterMovies.find(
-      (tm) => tm.theater.id === selectedTheater
+    const selectedTheaterData = theaterShows.find(
+      (ts) => ts.theater.id === selectedTheater
     )?.theater;
+    
     if (
       !selectedTheaterData ||
-      !tmdbId ||
-      !movieDetails?.title ||
+      !tvmazeId ||
+      !showDetails?.name ||
       !selectedDate ||
       !selectedTime
     ) {
-      alert("Please select a valid movie, theater, date, and time.");
+      alert("Please select a valid show, theater, date, and time.");
       return;
     }
 
@@ -203,9 +261,9 @@ const TicketBooking: React.FC = () => {
           price: totalPrice,
           date: selectedDate.toISOString().split("T")[0],
           time: selectedTime,
-          movie: movieDetails.title,
+          show: showDetails.name,
           seats: selectedSeats.length,
-          movieId: tmdbId,
+          showId: tvmazeId,
           theaterId: selectedTheaterData.id,
           seatnames: selectedSeats.map((seat) => seat.name),
         }
@@ -239,15 +297,15 @@ const TicketBooking: React.FC = () => {
     <div className={styles.container}>
       <h1 className={styles.h1}>Book Your Tickets</h1>
       <div className={styles.booking_form}>
-        <div className={styles.movie_info}>
-          {movieDetails && (
+        <div className={styles.show_info}>
+          {showDetails && (
             <>
-              <h2 className={styles.h2}>{movieDetails.title}</h2>
+              <h2 className={styles.h2}>{showDetails.name}</h2>
               <p className={styles.p}>
-                Release Date: {movieDetails.releaseDate}
+                Premiered: {showDetails.premiered}
               </p>
-              <p className={styles.p}>Genre: {movieDetails.genre}</p>
-              <p className={styles.p}>Duration: {movieDetails.duration}</p>
+              <p className={styles.p}>Genre: {showDetails.genres.join(", ")}</p>
+              <p className={styles.p}>Runtime: {showDetails.runtime} minutes</p>
             </>
           )}
         </div>
@@ -259,83 +317,95 @@ const TicketBooking: React.FC = () => {
             onChange={(e) => setSelectedTheater(e.target.value)}
           >
             <option value="">Select a theater</option>
-            {theaterMovies.map((tm) => (
-              <option key={tm.theater.id} value={tm.theater.id}>
-                {tm.theater.name}
+            {theaterShows.map((ts) => (
+              <option key={ts.theater.id} value={ts.theater.id}>
+                {ts.theater.name} - {ts.theater.location}
               </option>
             ))}
           </select>
         </div>
-        <div className={styles.form_group}>
-          <label htmlFor="timeSelect">Select Time:</label>
-          <select
-            id="timeSelect"
-            value={selectedTime}
-            onChange={(e) => setSelectedTime(e.target.value)}
-          >
-            <option value="">Select a time</option>
-            {availableTimes.map((time, index) => (
-              <option key={index} value={time}>
-                {time}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className={styles.form_group}>
-          <label htmlFor="datePicker">Select Date:</label>
-          <div className={styles.date_picker_wrapper}>
-            <DatePicker
-              id="datePicker"
-              selected={selectedDate}
-              onChange={(date: Date | null) => setSelectedDate(date)}
-              minDate={new Date()}
-              dateFormat="yyyy-MM-dd"
-              className={styles.date_picker}
-            />
-            <FaCalendarAlt className={styles.calendar_icon} />
-          </div>
-        </div>
-        <div className={styles.form_group}>
-          <Button variant="primary" onClick={handleShow}>
-            Select Seats
-          </Button>
-        </div>
-        <div className={styles.selected_seats}>
-          <strong>Selected Seats:</strong> {selectedSeats.length}
-        </div>
-        <div className={styles.selected_seats}>
-          <strong>Selected Seats Names:</strong>{" "}
-          {selectedSeats.map((seat) => seat.name).join(", ")}
-        </div>
-        <div className={styles.form_group}>
-          <strong>Total Price: </strong>₹{totalPrice}
-        </div>
-        <Button
-          variant="dark"
-          onClick={handlePayment}
-          disabled={
-            !selectedTheater ||
-            !selectedDate ||
-            !selectedTime ||
-            selectedSeats.length === 0
-          }
-        >
-          Proceed to Payment
-        </Button>
+        
+        {selectedTheater && (
+          <>
+            <div className={styles.form_group}>
+              <label htmlFor="timeSelect">Select Time:</label>
+              <select
+                id="timeSelect"
+                value={selectedTime}
+                onChange={(e) => setSelectedTime(e.target.value)}
+              >
+                <option value="">Select a time</option>
+                {availableTimes.map((time, index) => (
+                  <option key={index} value={time}>
+                    {time}
+                  </option>
+                ))}
+              </select>
+            </div>
+            
+            <div className={styles.form_group}>
+              <label htmlFor="datePicker">Select Date:</label>
+              <div className={styles.date_picker_wrapper}>
+                <DatePicker
+                  id="datePicker"
+                  selected={selectedDate}
+                  onChange={(date: Date | null) => setSelectedDate(date)}
+                  minDate={new Date()}
+                  dateFormat="yyyy-MM-dd"
+                  className={styles.date_picker}
+                />
+                <FaCalendarAlt className={styles.calendar_icon} />
+              </div>
+            </div>
+          </>
+        )}
+        
+        {selectedTime && selectedDate && (
+          <>
+            <div className={styles.form_group}>
+              <Button variant="primary" onClick={handleShow}>
+                Select Seats
+              </Button>
+            </div>
+            
+            {selectedSeats.length > 0 && (
+              <>
+                <div className={styles.selected_seats}>
+                  <strong>Selected Seats:</strong> {selectedSeats.length}
+                </div>
+                <div className={styles.selected_seats}>
+                  <strong>Selected Seats Names:</strong>{" "}
+                  {selectedSeats.map((seat) => seat.name).join(", ")}
+                </div>
+                <div className={styles.form_group}>
+                  <strong>Total Price: </strong>₹{totalPrice}
+                </div>
+                
+                <div className={styles.button_group}>
+                  <Button
+                    variant="dark"
+                    onClick={handlePayment}
+                    disabled={selectedSeats.length === 0}
+                    className={styles.payment_button}
+                  >
+                    Proceed to Payment
+                  </Button>
+                  
+                  <Button
+                    variant="success"
+                    onClick={handleBooking}
+                    disabled={!isPaymentDone}
+                    className={styles.booking_button}
+                  >
+                    Confirm Booking
+                  </Button>
+                </div>
+              </>
+            )}
+          </>
+        )}
+        
         <Toaster />
-        <Button
-          variant="success"
-          onClick={handleBooking}
-          disabled={
-            !selectedTheater ||
-            !selectedDate ||
-            !selectedTime ||
-            selectedSeats.length === 0 ||
-            !isPaymentDone
-          }
-        >
-          Book Ticket
-        </Button>
       </div>
 
       <SeatSelectionModal
