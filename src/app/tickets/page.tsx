@@ -150,7 +150,7 @@ const TicketBooking: React.FC = () => {
               summary: "A great TV show"
             },
             theater: {
-              id: "1",
+              id: "66a64000913a6f149cf74794",
               name: "Cineplex Downtown",
               location: "123 Main St"
             },
@@ -167,7 +167,7 @@ const TicketBooking: React.FC = () => {
               summary: "A great TV show"
             },
             theater: {
-              id: "2",
+              id: "66a647ad913a6f149cf747cd",
               name: "AMC Theater",
               location: "456 Oak Ave"
             },
@@ -184,7 +184,7 @@ const TicketBooking: React.FC = () => {
               summary: "A great TV show"
             },
             theater: {
-              id: "3",
+              id: "66a647c3913a6f149cf747d0",
               name: "Regal Cinemas",
               location: "789 Pine Blvd"
             },
